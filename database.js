@@ -8,24 +8,15 @@ const database = mysql.createPool({
     user: DB_USER,
     password: DB_PASSWORD,
     database: DB_NAME,
+    // socketPath: '/var/run/mysqld/mysqld.sock'
   });
   
-  database
-    .getConnection()
+  database.getConnection()
     .then(() => {
       console.log("Can reach database");
     })
     .catch((err) => {
       console.error(err);
     });
-
-//   database
-//   .query("select * from movies")
-//   .then(([movies]) => {
-//     console.log(movies);
-//   })
-//   .catch((err) => {
-//     console.error(err);
-//   });
 
 module.exports = database;

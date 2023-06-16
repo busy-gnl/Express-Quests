@@ -32,22 +32,13 @@ app.get("/api/users/:id", (req, res) => {
 
 
 const movieHandlers = require("./movieHandlers");
+const userHandler = require("./userHandler");
 const database = require("./database");
 
-const getMovies = (req, res) => {
-  database
-    .query("select * from movies")
-    .then(([movies]) => {
-      res.json(movies);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error retrieving data from database");
-    });
-};
-
-app.get("/api/movies", getMovies());
+app.get("/api/movies", movieHandlers.getMovies);
 app.get("/api/movies/:id", movieHandlers.getMovieById);
+app.get("/api/users", userHandler.getUsers);
+app.get("/api/users/:id", userHandler.getUserById);
 
 app.listen(port, (err) => {
   if (err) {
