@@ -3,42 +3,24 @@ const { APP_PORT} = process.env;
 
 const express = require("express");
 const app = express();
+app.use(express.json()); 
 
 const port = APP_PORT ?? 5000;
 
-const welcome = (req, res) => {
-  res.send("Welcome to my favorite movie list");
-};
-const users = [
-  { id: 1, name: "John" },
-  { id: 2, name: "Jane" },
-];
-
 // Routes handlers
 
-app.get("/", welcome);
-app.get("/api/users", (req, res) => {
-  res.status(200).json(users);
-});
-app.get("/api/users/:id", (req, res) => {
-  const { id } = req.params;
-
-  const user = users.find((user) => user.id === id);
-  if (!user){
-    return res.status(404).send("User not found" );
-  }
-  res.status(200).json(user);
-});
-
-
-const movieHandlers = require("./movieHandlers");
+const movieHandler = require("./movieHandler");
 const userHandler = require("./userHandler");
-const database = require("./database");
+const { validateUser, validateMovie } = require("./validators");
 
-app.get("/api/movies", movieHandlers.getMovies);
-app.get("/api/movies/:id", movieHandlers.getMovieById);
+app.get("/api/movies", movieHandler.getMovies);
+app.get("/api/movies/:id", movieHandler.getMovieById);
+app.put("/api/movies/:id", validateMovie, movieHandler.updateMovieById);
+app.post("/api/movies", validateMovie, movieHandler.postMovie);
 app.get("/api/users", userHandler.getUsers);
 app.get("/api/users/:id", userHandler.getUserById);
+app.put("/api/users/:id", validateUser, userHandler.updateUserById);
+app.post("/api/users", validateUser, userHandler.postUser);
 
 app.listen(port, (err) => {
   if (err) {

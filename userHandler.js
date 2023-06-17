@@ -29,7 +29,43 @@ const getUserById = (req, res) => {
     });
 };
 
+const postUser = (req, res) => {
+  const { name } = req.body;
+
+  database
+    .query(
+      "INSERT INTO users (name) VALUES (?)",
+      [name]
+    )
+    .then(([result]) => {
+      res.location(`/api/users/${result.insertId}`).sendStatus(201);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error saving the user");
+    });
+};
+
+const updateUserById = (req, res) => {
+  const { id, name } = req.body;
+
+  database
+    .query(
+      "update users set name = ? where id = ?",
+      [id, name]
+    )
+    .then(([result]) => {
+      res.location(`/api/users/${result.insertId}`).sendStatus(201);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error saving the user");
+    });
+};
+
 module.exports = {
   getUsers,
   getUserById,
+  postUser,
+  updateUserById,
 };
