@@ -47,7 +47,8 @@ const postUser = (req, res) => {
 };
 
 const updateUserById = (req, res) => {
-  const { id, name } = req.body;
+  const { id } = req.params;
+  const { name } = req.body;
 
   database
     .query(
