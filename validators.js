@@ -1,14 +1,19 @@
 const Joi = require("joi");
 
 const userSchema = Joi.object({
-  name: Joi.string().max(255).required(),
+  firstname: Joi.string().max(255).required(),
+  lastname: Joi.string().max(255).required(),
+  email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } } ),
+  city: Joi.string().max(255).required(),
+  language: Joi.string().max(255).required(),
+  password: Joi.string().pattern(/^[a-zA-Z0-9]{3,30}$/),
 });
 
 const validateUser = (req, res, next) => {
-  const { name } = req.body;
+  const { firstname, lastname, email, city, language, password } = req.body;
 
   const { error } = userSchema.validate(
-    { name },
+    { firstname, lastname, email, city, language, password },
     { abortEarly: false }
   );
 
