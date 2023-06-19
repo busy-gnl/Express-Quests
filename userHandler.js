@@ -1,6 +1,6 @@
 const database = require("./database");
 
-getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
+const getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
   const { email } = req.body;
 
   database
@@ -10,7 +10,7 @@ getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
         req.user = users[0];
         next();
       } else {
-        res.status(404).send("Not Found");
+        res.sendStatus(401);
       } 
     })
     .catch((err) => {
@@ -82,7 +82,10 @@ const postUser = (req, res) => {
       [firstname, lastname, city, language, email, hashedPassword]
     )
     .then(([result]) => {
-      res.location(`/api/users/${result.insertId}`).sendStatus(201);
+      console.log(result);
+      res.status(201).json("user created");
+      
+      // res.location(`/api/users/${result.insertId}`).sendStatus(201);
     })
     .catch((err) => {
       console.error(err);
@@ -91,7 +94,13 @@ const postUser = (req, res) => {
 };
 
 const updateUserById = (req, res) => {
-  const { id, firstname, lastname, city, language, email, hashedPassword } = req.body;
+  const id = parseInt(req.params.id);
+
+  const { firstname, lastname, city, language, email, hashedPassword } = req.body;
+  if (id !== req.payload.sub) {
+      res.status(403).send("Forbidden");
+      return;
+    }
 
   database
     .query(
@@ -110,6 +119,11 @@ const updateUserById = (req, res) => {
 const deleteUser = (req, res) => {
   const id = parseInt(req.params.id);
 
+  if (id !== req.payload.sub) {
+    res.status(403).send("Forbidden");
+    return;
+  }
+  
   database
     .query("delete from users where id = ?", [id])
     .then(([result]) => {
@@ -131,4 +145,5 @@ module.exports = {
   postUser,
   updateUserById,
   deleteUser,
+  getUserByEmailWithPasswordAndPassToNext,
 };
